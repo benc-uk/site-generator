@@ -139,7 +139,7 @@ func createIndex(path string, outDir string, srcDir string) error {
 		if f.IsDir() {
 			indexList = append(indexList, IndexEntry{
 				ShortName: fileBase,
-				FullName:  fileBase,
+				FullName:  fileBase + "/",
 				IsFile:    false,
 			})
 		}

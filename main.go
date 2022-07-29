@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/gomarkdown/markdown"
@@ -23,9 +24,17 @@ var standardTemplate string
 
 type TemplateData struct {
 	Title     string
-	IndexList []string
+	IndexList []IndexEntry
 	Body      template.HTML
 	Footer    template.HTML
+	IsTop     bool
+	IsIndex   bool
+}
+
+type IndexEntry struct {
+	ShortName string
+	FullName  string
+	IsFile    bool
 }
 
 func main() {
@@ -104,25 +113,38 @@ func createIndex(path string, outDir string, srcDir string) error {
 		return err
 	}
 
-	indexList := []string{}
+	indexList := []IndexEntry{}
 	for _, f := range contents {
 		fileBase := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
 		fileTarget := fileBase + ".html"
 
 		if f.IsDir() {
-			indexList = append(indexList, f.Name()+"/")
+			indexList = append(indexList, IndexEntry{
+				ShortName: fileBase,
+				FullName:  fileBase,
+				IsFile:    false,
+			})
 		}
 
 		if strings.HasSuffix(f.Name(), ".md") {
-			indexList = append(indexList, fileTarget)
+			indexList = append(indexList, IndexEntry{
+				ShortName: fileBase,
+				FullName:  fileTarget,
+				IsFile:    true,
+			})
 		}
 	}
+
+	sort.Slice(indexList, func(i, j int) bool {
+		return !indexList[i].IsFile
+	})
 
 	tmpl, err := template.New("index").Parse(standardTemplate)
 	if err != nil {
 		return err
 	}
 
+	//nolint
 	outFile, err := os.OpenFile(filepath.Join(outPath, "index.html"), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return err
@@ -134,6 +156,8 @@ func createIndex(path string, outDir string, srcDir string) error {
 	return tmpl.Execute(outFile, TemplateData{
 		Title:     contentTitle,
 		IndexList: indexList,
+		IsIndex:   true,
+		IsTop:     path == srcDir,
 	})
 }
 
@@ -172,6 +196,7 @@ func generateHTML(path string, outDir string, srcDir string) error {
 		return err
 	}
 
+	//nolint
 	outFile, err := os.OpenFile(outFileName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
 		return err

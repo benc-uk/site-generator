@@ -19,6 +19,9 @@ import (
 	_ "embed"
 )
 
+var version string = "0.0.0"
+var buildInfo string = "Local build"
+
 //go:embed templates/standard.html
 var standardTemplate string
 
@@ -38,11 +41,12 @@ type IndexEntry struct {
 }
 
 func main() {
-	var outDir string
+	log.Printf("🧵 Simple Site Generator v%s (%s)\n", version, buildInfo)
+
+	var outDir, srcDir, templateFile string
+
 	flag.StringVar(&outDir, "o", "./html", "Output HTML and site content here")
-	var srcDir string
 	flag.StringVar(&srcDir, "s", "./src", "Source directory containing Markdown files")
-	var templateFile string
 	flag.StringVar(&templateFile, "t", "", "Optional, custom template file")
 	flag.Parse()
 
@@ -50,6 +54,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	srcDir, err = filepath.Abs(srcDir)
 	if err != nil {
 		log.Fatal(err)
@@ -90,8 +95,7 @@ func main() {
 //
 //
 func createIndex(path string, outDir string, srcDir string) error {
-	var outPath string
-	var contentTitle string
+	var outPath, contentTitle string
 
 	if path == srcDir {
 		outPath = outDir
@@ -114,6 +118,7 @@ func createIndex(path string, outDir string, srcDir string) error {
 	}
 
 	indexList := []IndexEntry{}
+
 	for _, f := range contents {
 		fileBase := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
 		fileTarget := fileBase + ".html"

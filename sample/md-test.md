@@ -1,25 +1,19 @@
 # Markdown: Syntax
 
-*   [Overview](#overview)
-    *   [Philosophy](#philosophy)
-    *   [Inline HTML](#html)
-    *   [Automatic Escaping for Special Characters](#autoescape)
-*   [Block Elements](#block)
-    *   [Paragraphs and Line Breaks](#p)
-    *   [Headers](#header)
-    *   [Blockquotes](#blockquote)
-    *   [Lists](#list)
-    *   [Code Blocks](#precode)
-    *   [Horizontal Rules](#hr)
-*   [Span Elements](#span)
-    *   [Links](#link)
-    *   [Emphasis](#em)
-    *   [Code](#code)
-    *   [Images](#img)
-*   [Miscellaneous](#misc)
-    *   [Backslash Escapes](#backslash)
-    *   [Automatic Links](#autolink)
-
+- [Markdown: Syntax](#markdown-syntax)
+  - [Overview](#overview)
+    - [Philosophy](#philosophy)
+  - [Block Elements](#block-elements)
+    - [Paragraphs and Line Breaks](#paragraphs-and-line-breaks)
+    - [Headers](#headers)
+    - [Blockquotes](#blockquotes)
+    - [Image Test](#image-test)
+    - [Lists](#lists)
+    - [Code Blocks](#code-blocks)
+  - [Span Elements](#span-elements)
+    - [Links](#links)
+    - [Emphasis](#emphasis)
+    - [Code](#code)
 
 **Note:** This document is itself written using Markdown; you
 can [see the source for it by adding '.text' to the URL](/projects/markdown/syntax.text).
@@ -39,6 +33,12 @@ Markdown's syntax has been influenced by several existing text-to-HTML
 filters -- including [Setext](http://docutils.sourceforge.net/mirror/setext.html), [atx](http://www.aaronsw.com/2002/atx/), [Textile](http://textism.com/tools/textile/), [reStructuredText](http://docutils.sourceforge.net/rst.html),
 [Grutatext](http://www.triptico.com/software/grutatxt.html), and [EtText](http://ettext.taint.org/doc/) -- the single biggest source of
 inspiration for Markdown's syntax is the format of plain text email.
+
+## Image Examples
+
+![kite](https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/microsoft/310/kite_1fa81.png)
+
+![kitten](http://placekitten.com/600/400)
 
 ## Block Elements
 
@@ -117,7 +117,6 @@ and code blocks:
 Any decent text editor should make email-style quoting easy. For
 example, with BBEdit, you can make a selection and choose Increase
 Quote Level from the Text menu.
-
 
 ### Lists
 

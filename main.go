@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"html/template"
-	"io"
 	"io/fs"
 	"log"
 	"os"
@@ -22,8 +22,8 @@ import (
 var version string = "0.0.0"
 var buildInfo string = "Local build"
 
-//go:embed templates/standard.html
-var standardTemplate string
+//go:embed templates/default.html
+var htmlTemplate string
 
 type TemplateData struct {
 	Title     string
@@ -41,12 +41,12 @@ type IndexEntry struct {
 }
 
 func main() {
-	log.Printf("🧵 Simple Site Generator v%s (%s)\n", version, buildInfo)
+	fmt.Printf("🧵 Simple Site Generator v%s (%s)\n\n", version, buildInfo)
 
 	var outDir, srcDir, templateFile string
 
-	flag.StringVar(&outDir, "o", "./html", "Output HTML and site content here")
-	flag.StringVar(&srcDir, "s", "./src", "Source directory containing Markdown files")
+	flag.StringVar(&outDir, "o", "./html", "Output directory for generated HTML files")
+	flag.StringVar(&srcDir, "s", "./src", "Source directory containing markdown files")
 	flag.StringVar(&templateFile, "t", "", "Optional, custom template file")
 	flag.Parse()
 
@@ -62,6 +62,21 @@ func main() {
 
 	if _, err := os.Stat(srcDir); errors.Is(err, os.ErrNotExist) {
 		log.Fatalf("💥 Source directory %s does not exist!", srcDir)
+	}
+
+	if templateFile != "" {
+		log.Println("🧩 Using custom template:", templateFile)
+
+		if _, err := os.Stat(templateFile); err != nil {
+			log.Fatal(err)
+		}
+
+		newTemplate, err := os.ReadFile(templateFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		htmlTemplate = string(newTemplate)
 	}
 
 	_ = filepath.WalkDir(srcDir, func(path string, d fs.DirEntry, err error) error {
@@ -87,12 +102,10 @@ func main() {
 
 		return nil
 	})
-
-	_ = copyFile(srcDir+"/style.css", outDir+"/style.css")
 }
 
 //
-//
+// Generate index.html for a directory
 //
 func createIndex(path string, outDir string, srcDir string) error {
 	var outPath, contentTitle string
@@ -144,7 +157,7 @@ func createIndex(path string, outDir string, srcDir string) error {
 		return !indexList[i].IsFile
 	})
 
-	tmpl, err := template.New("index").Parse(standardTemplate)
+	tmpl, err := template.New("index").Parse(htmlTemplate)
 	if err != nil {
 		return err
 	}
@@ -167,7 +180,7 @@ func createIndex(path string, outDir string, srcDir string) error {
 }
 
 //
-//
+// Convert markdown to HTML and write to a file
 //
 func generateHTML(path string, outDir string, srcDir string) error {
 	var outPath string
@@ -194,9 +207,10 @@ func generateHTML(path string, outDir string, srcDir string) error {
 	if err != nil {
 		return err
 	}
+
 	htmlBody := markdown.ToHTML(md, parser, renderer)
 
-	tmpl, err := template.New("index").Parse(standardTemplate)
+	tmpl, err := template.New("index").Parse(htmlTemplate)
 	if err != nil {
 		return err
 	}
@@ -210,29 +224,7 @@ func generateHTML(path string, outDir string, srcDir string) error {
 
 	return tmpl.Execute(outFile, TemplateData{
 		Title: fileBase,
-		Body:  template.HTML(htmlBody),
+		// nolint
+		Body: template.HTML(htmlBody),
 	})
-}
-
-//
-//
-//
-func copyFile(src, dst string) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer in.Close()
-
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	_, err = io.Copy(out, in)
-	if err != nil {
-		return err
-	}
-	return out.Close()
 }

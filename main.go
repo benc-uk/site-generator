@@ -104,9 +104,7 @@ func main() {
 	})
 }
 
-//
 // Generate index.html for a directory
-//
 func createIndex(path string, outDir string, srcDir string) error {
 	var outPath, contentTitle string
 
@@ -179,9 +177,7 @@ func createIndex(path string, outDir string, srcDir string) error {
 	})
 }
 
-//
 // Convert markdown to HTML and write to a file
-//
 func generateHTML(path string, outDir string, srcDir string) error {
 	var outPath string
 	if path == srcDir {

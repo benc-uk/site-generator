@@ -10,7 +10,6 @@ linters:
     - gosec       # Find security issues
     - wsl         # Whitespace linter
     - stylecheck  # A few Go style rules
-    - nosnakecase # We are not writing Python here
     - misspell    # Find misspelled words
     - cyclop      # Find cyclomatic complexity
     - gocyclo     # Also find cyclomatic complexity
@@ -18,7 +17,6 @@ linters:
     - nilerr      # Find bad nil/err handling
     - nilnil      # Also find bad nil/err handling
     - tagliatelle # Find badly named struct tags
-    #- gomnd       # Find magic numbers, enable at your peril
 
 linters-settings:
   cyclop:
@@ -46,3 +44,5 @@ linters-settings:
       - name: line-length-limit
         severity: error
         arguments: [120]
+      - name: var-naming
+        severity: error
